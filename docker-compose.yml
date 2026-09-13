@@ -1,0 +1,41 @@
+# Shared local dev stack for festival-auth-service and tickets-api.
+# Ports are deliberately non-default (54xx/63xx) to avoid colliding with
+# other projects' Postgres/Redis containers on this machine.
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: festival-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: festival
+      POSTGRES_PASSWORD: festival
+      POSTGRES_DB: festival
+    ports:
+      - "5442:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init-databases.sql:/docker-entrypoint-initdb.d/init-databases.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U festival"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: festival-redis
+    restart: unless-stopped
+    ports:
+      - "6390:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  postgres_data:
+  redis_data:
