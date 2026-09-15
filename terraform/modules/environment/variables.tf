@@ -47,3 +47,9 @@ variable "auth_service_domain" {
   type        = string
   default     = ""
 }
+
+variable "tickets_api_domain" {
+  description = "Custom domain for tickets-api."
+  type        = string
+  default     = ""
+}

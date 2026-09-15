@@ -10,6 +10,7 @@ locals {
     "redis.googleapis.com",             # Memorystore
     "secretmanager.googleapis.com",     # Secret Manager
     "artifactregistry.googleapis.com",  # Container image storage for Cloud Run
+    "storage.googleapis.com",           # Cloud Storage — durable event/avatar image uploads
     "vpcaccess.googleapis.com",         # Serverless VPC Access (Cloud Run -> Memorystore)
     "servicenetworking.googleapis.com", # Private services access (Memorystore needs this)
     "compute.googleapis.com",           # VPC network/subnet

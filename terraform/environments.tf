@@ -11,6 +11,7 @@ module "staging" {
   private_vpc_connection = google_service_networking_connection.private_vpc_connection
   tickets_web_domain     = var.domain_tickets_web
   auth_service_domain    = var.domain_auth_service
+  tickets_api_domain     = var.domain_tickets_api
 
   depends_on = [google_artifact_registry_repository.main]
 }
@@ -28,6 +29,7 @@ module "production" {
   private_vpc_connection = google_service_networking_connection.private_vpc_connection
   tickets_web_domain     = var.domain_tickets_web
   auth_service_domain    = var.domain_auth_service
+  tickets_api_domain     = var.domain_tickets_api
 
   depends_on = [google_artifact_registry_repository.main]
 }

@@ -1,16 +1,21 @@
-# Cross-service URLs would naturally form a cycle (auth-service needs
-# tickets-api's address for internal registration calls; tickets-api needs
-# auth-service's address for JWKS verification). Broken by having
-# tickets-api and tickets-web reference auth-service's STABLE custom
-# domain (a plain string, not a Terraform dependency on the auth-service
-# resource) while auth-service references tickets-api's real Cloud-Run-
-# assigned .uri (a real dependency — tickets-api gets created first).
-# Staging gets its own "staging."-prefixed domain rather than the
-# ephemeral default *.run.app URL, for exactly the same reason.
+# Cross-service URLs would naturally form a cycle if any of these three
+# referenced each other's live, Terraform-managed resource (e.g. its real
+# `.uri`, only known after that resource is created). Broken by having
+# every service reference the other two's custom domain as a PLAIN STRING
+# instead — a domain name is just var.<x>_domain with an optional
+# "staging." prefix, computed with no dependency on the actual
+# google_cloud_run_v2_service/domain_mapping resources existing yet, so
+# there's no ordering constraint between any of the three.
 locals {
   tickets_web_domain  = var.environment == "production" ? var.tickets_web_domain : "staging.${var.tickets_web_domain}"
   auth_service_domain = var.environment == "production" ? var.auth_service_domain : "staging.${var.auth_service_domain}"
+  tickets_api_domain  = var.environment == "production" ? var.tickets_api_domain : "staging.${var.tickets_api_domain}"
   image_base          = "${var.region}-docker.pkg.dev/${var.project_id}/festival"
+
+  # Production keeps one instance warm per service (no cold starts, ~$10-15/mo
+  # each); staging scales to zero when idle since a slower first request
+  # there doesn't matter and it's not worth paying for 24/7.
+  min_instances = var.environment == "production" ? 1 : 0
 }
 
 resource "google_cloud_run_v2_service" "tickets_api" {
@@ -30,7 +35,8 @@ resource "google_cloud_run_v2_service" "tickets_api" {
     # every plan since the API echoes back a scaling block we never
     # declared.
     scaling {
-      min_instance_count = 0
+      min_instance_count = local.min_instances
+      max_instance_count = 10
     }
 
     vpc_access {
@@ -63,6 +69,14 @@ resource "google_cloud_run_v2_service" "tickets_api" {
       env {
         name  = "AUTH_JWKS_URI"
         value = "https://${local.auth_service_domain}/.well-known/jwks.json"
+      }
+      env {
+        name  = "PUBLIC_API_URL"
+        value = "https://${local.tickets_api_domain}"
+      }
+      env {
+        name  = "GCS_BUCKET_NAME"
+        value = google_storage_bucket.uploads.name
       }
       env {
         name = "DATABASE_URL"
@@ -151,7 +165,8 @@ resource "google_cloud_run_v2_service" "auth_service" {
     service_account = google_service_account.auth_service.email
 
     scaling {
-      min_instance_count = 0
+      min_instance_count = local.min_instances
+      max_instance_count = 10
     }
 
     vpc_access {
@@ -184,11 +199,19 @@ resource "google_cloud_run_v2_service" "auth_service" {
       }
       env {
         name  = "TICKETS_API_URL"
-        value = google_cloud_run_v2_service.tickets_api.uri
+        value = "https://${local.tickets_api_domain}"
       }
       env {
         name  = "TICKETS_WEB_URL"
         value = "https://${local.tickets_web_domain}"
+      }
+      env {
+        name  = "PUBLIC_BASE_URL"
+        value = "https://${local.auth_service_domain}"
+      }
+      env {
+        name  = "GCS_BUCKET_NAME"
+        value = google_storage_bucket.uploads.name
       }
       # FIREBASE_AUTH_EMULATOR_HOST deliberately not set — its absence is
       # what tells firebase-admin.service.ts and /firebase-config.js to use
@@ -284,7 +307,8 @@ resource "google_cloud_run_v2_service" "tickets_web" {
     service_account = google_service_account.tickets_web.email
 
     scaling {
-      min_instance_count = 0
+      min_instance_count = local.min_instances
+      max_instance_count = 10
     }
 
     containers {
@@ -296,7 +320,7 @@ resource "google_cloud_run_v2_service" "tickets_web" {
       }
       env {
         name  = "NUXT_PUBLIC_TICKETS_API_URL"
-        value = google_cloud_run_v2_service.tickets_api.uri
+        value = "https://${local.tickets_api_domain}"
       }
     }
   }
@@ -338,6 +362,20 @@ resource "google_cloud_run_domain_mapping" "auth_service" {
 
   spec {
     route_name = google_cloud_run_v2_service.auth_service.name
+  }
+}
+
+resource "google_cloud_run_domain_mapping" "tickets_api" {
+  project  = var.project_id
+  location = var.region
+  name     = local.tickets_api_domain
+
+  metadata {
+    namespace = var.project_id
+  }
+
+  spec {
+    route_name = google_cloud_run_v2_service.tickets_api.name
   }
 }
 

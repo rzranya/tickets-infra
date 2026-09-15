@@ -34,6 +34,12 @@ variable "domain_auth_service" {
   default     = "accounts.festival.in.th"
 }
 
+variable "domain_tickets_api" {
+  description = "Custom domain for tickets-api (production). Staging gets \"staging.\" prefixed onto this. Named for its main public-facing role — serving uploaded images/files (and later PDFs, video) — rather than \"api\", which doesn't fit: nothing here is actually routed under an /api path, and the JSON endpoints this same domain also serves are never directly visible to a user the way a linked file URL is. Exists so those URLs (and the general API base URL) never expose the raw *.run.app hostname — that string bakes in both the GCP project number and the literal word \"staging\"/\"production\"."
+  type        = string
+  default     = "cdn.festival.in.th"
+}
+
 variable "github_repo_owner" {
   description = "GitHub org/user that owns the four repos — for Workload Identity Federation's attribute condition."
   type        = string

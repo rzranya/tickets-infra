@@ -28,5 +28,6 @@ output "dns_records" {
   value = {
     (local.tickets_web_domain)  = google_cloud_run_domain_mapping.tickets_web.status[0].resource_records
     (local.auth_service_domain) = google_cloud_run_domain_mapping.auth_service.status[0].resource_records
+    (local.tickets_api_domain)  = google_cloud_run_domain_mapping.tickets_api.status[0].resource_records
   }
 }
