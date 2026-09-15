@@ -6,8 +6,14 @@
 # (avatars) under separate path prefixes — see each service's own
 # GCS_BUCKET_NAME env var and *-images.service.ts for the upload code.
 resource "google_storage_bucket" "uploads" {
-  project                     = var.project_id
-  name                        = "${var.project_id}-uploads-${var.environment}"
+  project = var.project_id
+  # Production: clean name, no environment suffix — this is purely an
+  # internal GCP resource identifier (never reaches the browser or any
+  # public URL, see UploadsController), but still named to not read
+  # "production" in the console. Staging keeps the original
+  # project-id-prefixed name — untouched deliberately, not part of this
+  # rename.
+  name                        = var.environment == "production" ? "festival-assets-uploads" : "${var.project_id}-uploads-${var.environment}"
   location                    = var.region
   uniform_bucket_level_access = true
   force_destroy               = var.environment != "production"
