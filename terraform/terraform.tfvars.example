@@ -11,6 +11,6 @@ sql_tier_production = "db-custom-2-7680"
 
 domain_tickets_web  = "tickets.festival.in.th"
 domain_auth_service = "accounts.festival.in.th"
-domain_tickets_api  = "cdn.festival.in.th"
+domain_tickets_api  = "api.festival.in.th"
 
 github_repo_owner = "rzranya"
