@@ -428,7 +428,15 @@ resource "google_cloud_run_v2_service_iam_member" "auth_service_public" {
   member   = "allUsers"
 }
 
+# Production's tickets_web isn't launched yet — still the placeholder
+# "hello" image, which the public shouldn't be able to browse to. Skipping
+# this binding there makes Cloud Run's default (auth required, 403 to an
+# unauthenticated request) kick in instead — nothing real to see either
+# way, but not a stray public "hello" page either. The domain mapping and
+# cert stay intact regardless; flip this back to unconditional once the
+# real launch happens.
 resource "google_cloud_run_v2_service_iam_member" "tickets_web_public" {
+  count    = var.environment == "production" ? 0 : 1
   project  = var.project_id
   location = var.region
   name     = google_cloud_run_v2_service.tickets_web.name
