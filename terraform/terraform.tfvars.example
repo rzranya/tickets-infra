@@ -13,4 +13,6 @@ domain_tickets_web  = "tickets.festival.in.th"
 domain_auth_service = "accounts.festival.in.th"
 domain_tickets_api  = "api.festival.in.th"
 
+ga_measurement_id = "G-CZXCQ2RM5D"
+
 github_repo_owner = "rzranya"

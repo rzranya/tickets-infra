@@ -28,6 +28,12 @@ variable "domain_tickets_web" {
   default     = "tickets.festival.in.th"
 }
 
+variable "ga_measurement_id" {
+  description = "Google Analytics 4 measurement ID (e.g. \"G-XXXXXXX\") for tickets-web. Wired into production only — staging traffic (our own testing) would otherwise pollute the real analytics stream. Empty disables it entirely (see app/plugins/analytics.client.ts, which no-ops without one)."
+  type        = string
+  default     = "G-CZXCQ2RM5D"
+}
+
 variable "domain_auth_service" {
   description = "Custom domain for festival-auth-service (production). Staging gets \"staging.\" prefixed onto this."
   type        = string

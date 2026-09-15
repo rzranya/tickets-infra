@@ -12,6 +12,7 @@ module "staging" {
   tickets_web_domain     = var.domain_tickets_web
   auth_service_domain    = var.domain_auth_service
   tickets_api_domain     = var.domain_tickets_api
+  ga_measurement_id      = var.ga_measurement_id
 
   depends_on = [google_artifact_registry_repository.main]
 }
@@ -30,6 +31,7 @@ module "production" {
   tickets_web_domain     = var.domain_tickets_web
   auth_service_domain    = var.domain_auth_service
   tickets_api_domain     = var.domain_tickets_api
+  ga_measurement_id      = var.ga_measurement_id
 
   depends_on = [google_artifact_registry_repository.main]
 }

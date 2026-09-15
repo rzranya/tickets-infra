@@ -42,6 +42,12 @@ variable "tickets_web_domain" {
   default     = ""
 }
 
+variable "ga_measurement_id" {
+  description = "Google Analytics 4 measurement ID for tickets-web. Only wired into the production container — see the variable of the same name in the root module."
+  type        = string
+  default     = ""
+}
+
 variable "auth_service_domain" {
   description = "Custom domain for festival-auth-service. Empty string means no domain mapping (staging)."
   type        = string

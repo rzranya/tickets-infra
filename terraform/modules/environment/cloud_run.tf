@@ -344,6 +344,14 @@ resource "google_cloud_run_v2_service" "tickets_web" {
         name  = "NUXT_PUBLIC_I18N_BASE_URL"
         value = "https://${local.tickets_web_domain}"
       }
+      # Production only — see the ga_measurement_id variable comment.
+      dynamic "env" {
+        for_each = var.environment == "production" && var.ga_measurement_id != "" ? [var.ga_measurement_id] : []
+        content {
+          name  = "NUXT_PUBLIC_GA_ID"
+          value = env.value
+        }
+      }
     }
   }
 
