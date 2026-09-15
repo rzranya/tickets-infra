@@ -333,6 +333,17 @@ resource "google_cloud_run_v2_service" "tickets_web" {
         name  = "NUXT_PUBLIC_TICKETS_API_URL"
         value = "https://${local.tickets_api_domain}"
       }
+      # @nuxtjs/i18n's baseUrl (used for canonical/hreflang links and the
+      # og:url/og:locale meta tags useLocaleHead() generates) is exposed at
+      # runtimeConfig.public.i18n.baseUrl — this env var overrides Nuxt's
+      # build-time default (localhost, from nuxt.config.ts) at runtime, so
+      # the same built image serves the right domain whether it's running
+      # in staging or production (see deploy-production.yml: production
+      # promotes the exact staging image rather than rebuilding).
+      env {
+        name  = "NUXT_PUBLIC_I18N_BASE_URL"
+        value = "https://${local.tickets_web_domain}"
+      }
     }
   }
 
