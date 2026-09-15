@@ -32,6 +32,14 @@ phone OTP is testable right now without waiting on the real project setup
 in `manual-setup-tasks.md`. Swap `.firebaserc` to the real project id later
 if you want the emulator to mirror the actual project (e.g. before staging).
 
+The real project (per `manual-setup-tasks.md`'s Phase 1 Firebase decision)
+is `musicfestival-in-th` — the existing Firebase project reused from the
+other domain's PWA, now with Phone Auth enabled, `tickets.festival.in.th`
+and `accounts.festival.in.th` added as authorized domains, and on the
+Blaze plan. Swap `.firebaserc`'s `default` to `musicfestival-in-th` when
+this stack needs to mirror the real project — not needed for everyday
+local dev.
+
 ## Databases
 
 One Postgres container, two databases (`scripts/init-databases.sql`):

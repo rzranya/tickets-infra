@@ -1,0 +1,15 @@
+# Copy to terraform.tfvars and adjust if needed — every value here has a
+# sensible default in variables.tf already, so an empty terraform.tfvars
+# (or none at all) works fine too. This file exists mainly to document
+# what's overridable.
+
+project_id = "festival-508622"
+region     = "asia-southeast1"
+
+sql_tier_staging    = "db-f1-micro"
+sql_tier_production = "db-custom-2-7680"
+
+domain_tickets_web  = "tickets.festival.in.th"
+domain_auth_service = "accounts.festival.in.th"
+
+github_repo_owner = "rzranya"
