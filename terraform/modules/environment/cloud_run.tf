@@ -244,6 +244,17 @@ resource "google_cloud_run_v2_service" "auth_service" {
         }
       }
       env {
+        # Not a secret (project IDs aren't sensitive) — same real Firebase
+        # project reused for both environments. Missing this caused the
+        # Admin SDK to fall back to its local-dev default ("demo-festival"),
+        # rejecting every real phone sign-in with a token "aud" mismatch —
+        # the client was correctly talking to the real project (via
+        # FIREBASE_AUTH_DOMAIN, which the client SDK actually routes on),
+        # but the server verified against the wrong one.
+        name  = "FIREBASE_PROJECT_ID"
+        value = "musicfestival-in-th"
+      }
+      env {
         name = "DATABASE_URL"
         value_source {
           secret_key_ref {
