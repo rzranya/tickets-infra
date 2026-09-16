@@ -35,9 +35,9 @@ variable "ga_measurement_id" {
 }
 
 variable "jwt_access_token_ttl_seconds" {
-  description = "How long a buyer/owner/staff/admin sign-in JWT stays valid (auth-service's TokenService). Was never actually set here before — staging and production silently fell back to the code's own 3600s (1 hour) default, shorter than intended and easy for a buyer to hit mid-checkout (sign in, browse, get distracted, come back to pay — session gone). Same value for both environments; no reason for them to differ."
+  description = "How long a buyer/owner/staff/admin sign-in JWT stays valid (auth-service's TokenService) before it needs the sliding renewal (see festival-auth-service's /users/me/renew-session and each frontend's auth boot plugin) to refresh it — in practice this is only how long a SIGNED-OUT-AND-NEVER-RETURNED session survives, since any visit within the window resets the clock. 7 days, matching the expectation set by musicfestival.in.th (this project's sister site) that a user shouldn't have to keep re-logging in. Same value for both environments; no reason for them to differ."
   type        = number
-  default     = 10800
+  default     = 604800
 }
 
 variable "domain_auth_service" {
