@@ -23,3 +23,10 @@ output "dns_records_to_create" {
   description = "Point manual-setup-tasks.md's DNS step at these — one CNAME/A record per domain, computed by Cloud Run after apply."
   value       = merge(module.staging.dns_records, module.production.dns_records)
 }
+
+output "monitoring_dashboard_urls" {
+  value = {
+    staging    = module.staging.monitoring_dashboard_url
+    production = module.production.monitoring_dashboard_url
+  }
+}

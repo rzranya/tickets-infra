@@ -17,6 +17,7 @@ locals {
     "iam.googleapis.com",
     "iamcredentials.googleapis.com", # Workload Identity Federation
     "cloudresourcemanager.googleapis.com",
+    "monitoring.googleapis.com", # Cloud Monitoring dashboards
   ]
 }
 
