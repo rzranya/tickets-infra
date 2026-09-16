@@ -70,6 +70,12 @@ resource "google_cloud_run_v2_service" "tickets_api" {
         name  = "AUTH_JWKS_URI"
         value = "https://${local.auth_service_domain}/.well-known/jwks.json"
       }
+      # Server-to-server calls into festival-auth-service — currently just
+      # the CSV export's buyer lookup (see ExportService).
+      env {
+        name  = "AUTH_SERVICE_URL"
+        value = "https://${local.auth_service_domain}"
+      }
       env {
         name  = "PUBLIC_API_URL"
         value = "https://${local.tickets_api_domain}"
