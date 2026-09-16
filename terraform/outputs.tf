@@ -30,3 +30,7 @@ output "monitoring_dashboard_urls" {
     production = module.production.monitoring_dashboard_url
   }
 }
+
+output "db_backups_bucket" {
+  value = module.production.db_backups_bucket
+}
