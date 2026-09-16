@@ -48,6 +48,12 @@ variable "ga_measurement_id" {
   default     = ""
 }
 
+variable "jwt_access_token_ttl_seconds" {
+  description = "How long a sign-in JWT stays valid, for auth-service's container — see the variable of the same name in the root module."
+  type        = number
+  default     = 10800
+}
+
 variable "auth_service_domain" {
   description = "Custom domain for festival-auth-service. Empty string means no domain mapping (staging)."
   type        = string

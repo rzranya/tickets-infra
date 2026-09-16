@@ -34,6 +34,12 @@ variable "ga_measurement_id" {
   default     = "G-CZXCQ2RM5D"
 }
 
+variable "jwt_access_token_ttl_seconds" {
+  description = "How long a buyer/owner/staff/admin sign-in JWT stays valid (auth-service's TokenService). Was never actually set here before — staging and production silently fell back to the code's own 3600s (1 hour) default, shorter than intended and easy for a buyer to hit mid-checkout (sign in, browse, get distracted, come back to pay — session gone). Same value for both environments; no reason for them to differ."
+  type        = number
+  default     = 10800
+}
+
 variable "domain_auth_service" {
   description = "Custom domain for festival-auth-service (production). Staging gets \"staging.\" prefixed onto this."
   type        = string

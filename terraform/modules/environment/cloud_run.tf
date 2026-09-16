@@ -198,6 +198,10 @@ resource "google_cloud_run_v2_service" "auth_service" {
         value = "https://${local.auth_service_domain}"
       }
       env {
+        name  = "JWT_ACCESS_TOKEN_TTL_SECONDS"
+        value = tostring(var.jwt_access_token_ttl_seconds)
+      }
+      env {
         name  = "TICKETS_API_URL"
         value = "https://${local.tickets_api_domain}"
       }
